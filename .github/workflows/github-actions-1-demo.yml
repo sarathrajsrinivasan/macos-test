@@ -51,10 +51,10 @@ jobs:
         os: [ubuntu-latest,windows-latest]
         include:
           - node-version: 18
-            operating-system: ubuntu-latest
+            os: ubuntu-latest
         exclude:
           - node-version: 14
-            operating-system: windows-latest
+            os: windows-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
