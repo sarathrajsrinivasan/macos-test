@@ -1,0 +1,21 @@
+{
+  "name": "Sample-node-project",
+  "version": "1.0.0",
+  "description": "A sample Node.js Project",
+  "main": "index.js",
+  "scripts": {
+    "start": "node NodeJS/index.js",
+    "build": "echo 'Add your build command here'",
+    "test": "echo 'Add your testing framework here'"
+  },
+  "keywords": [
+    "node",
+    "express"
+  ],
+  "author": "Sarathraj Srinivasan",
+  "license": "MIT",
+  "dependencies": {
+    "express":"latest",
+    "ejs":"latest"
+  }
+}
