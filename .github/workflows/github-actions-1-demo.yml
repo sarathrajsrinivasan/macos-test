@@ -27,7 +27,7 @@ on: [push, workflow_dispatch] # we can add multiple event triggers like this. wo
 #   workflow_dispatch:   --> Note: here we need to add ":" eventhough we dont have anything to add more to it.
 
 jobs:
-  Explore-GitHub-Actions:
+  Explore-Basic-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
       - run: echo "The job was automatically triggered by a ${{ github.event_name }} event."
@@ -42,6 +42,19 @@ jobs:
           ls ${{ github.workspace }}
       - run: echo "This job's status is ${{ job.status }}."
 
+  Explore-Matrix:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest,windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '12'
+      - run: npm install
+      
 ##################################################################################################################### 
 
 # Workflow Triggers for Github Actions: on: [push]
