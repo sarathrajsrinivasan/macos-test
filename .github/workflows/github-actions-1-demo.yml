@@ -44,15 +44,22 @@ jobs:
 
   Explore-Matrix:
     runs-on: ${{ matrix.os }}
+    continue-on-error: true # If we dont give this..then even if 1/6 jobs fail then other jobs in progress will be cancelled.
     strategy:
-      fail-fast: false
       matrix:
+        node-version: [14, 16]
         os: [ubuntu-latest,windows-latest]
+        include:
+          - node-version: 18
+            operating-system: ubuntu-latest
+        exclude:
+          - node-version: 14
+            operating-system: windows-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '12'
+          node-version: ${{ matrix.node-version }}
       - run: npm install
       
 ##################################################################################################################### 
