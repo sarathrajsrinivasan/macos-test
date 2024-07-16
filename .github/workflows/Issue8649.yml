@@ -1,0 +1,101 @@
+name: Testing Issue 8649
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-macos:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ 'macos-12', 'macos-13', 'macos-14']
+        try: ['0', '1', '2']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+          
+      - name: python.socket (before)
+        shell: python
+        run: |
+          print(
+            'Linux: Expecting gethostname to return the same as "hostname"'
+            ' and the other interfaces to return the same as "hostname -f"'
+            '\n\n'
+            'Mac OS: Expect *ipv6.arpa addresses due to a longstanding'
+            '  Python bug\n\n'
+          )
+          import socket
+          for expr in (
+              'socket.gethostname()',
+              'socket.getfqdn()',
+              'socket.getfqdn(socket.gethostname())',
+              'socket.getfqdn(socket.getfqdn())',
+              'socket.gethostbyname_ex(socket.gethostname())[0]',
+              'socket.gethostbyname_ex(socket.getfqdn())[0]'
+          ):
+              try:
+                  result = eval(expr)
+              except Exception as exc:
+                  result = str(exc)
+              print(f'{expr:50}: {result}')
+
+      - name: Get value of /etc/hosts
+        run: |
+          sudo cat /etc/hosts
+              
+      - name: nslookup for mac
+        shell: bash
+        run: |
+          echo -e "Expecting nslookup to return $(hostname -f)\n\n"
+          for host in "$(hostname)" "$(hostname -f)"; do
+              echo -e "$(ipconfig getifaddr en0) $(hostname -f) $(hostname -s)" | sudo tee -a /etc/hosts 
+              dscacheutil -q host -a name $(hostname -f)
+          done
+          
+      - name: Get value of /etc/hosts
+        run: |
+          sudo cat /etc/hosts
+
+      - name: resolve
+        shell: pwsh
+        run: |
+          $hostName = [System.Net.Dns]::GetHostName()
+          [System.Net.Dns]::GetHostEntry($hostName)
+
+      - name: Ping the hostname
+        run: |
+          set -x
+          hostname
+          ping -c 4 $(hostname) || :
+
+      - name: python.socket (after)
+        shell: python
+        run: |
+          print(
+            'Linux: Expecting gethostname to return the same as "hostname"'
+            ' and the other interfaces to return the same as "hostname -f"'
+            '\n\n'
+            'Mac OS: Expect *ipv6.arpa addresses due to a longstanding'
+            '  Python bug\n\n'
+          )
+          import socket
+          for expr in (
+              'socket.gethostname()',
+              'socket.getfqdn()',
+              'socket.getfqdn(socket.gethostname())',
+              'socket.getfqdn(socket.getfqdn())',
+              'socket.gethostbyname_ex(socket.gethostname())[0]',
+              'socket.gethostbyname_ex(socket.getfqdn())[0]'
+          ):
+              try:
+                  result = eval(expr)
+              except Exception as exc:
+                  result = str(exc)
+              print(f'{expr:50}: {result}')
