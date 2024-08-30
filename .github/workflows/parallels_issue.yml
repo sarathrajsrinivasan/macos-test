@@ -1,0 +1,36 @@
+name: Testing Parallels 2
+
+on:
+  workflow_dispatch:
+    
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['macos-12','macos-13','macos-14-large']
+        
+    runs-on: ${{ matrix.os }}
+
+    steps: 
+    - name: Run
+      shell: bash
+      run: |
+        brew install --cask parallels
+        brew install --cask parallels-virtualization-sdk
+    - name: Retry command
+      run: |
+        MAX_RETRIES=2
+        RETRY_COUNT=0
+        until [ $RETRY_COUNT -ge $MAX_RETRIES ]
+        do
+          sudo kextload /Applications/Parallels\ Desktop.app/Contents/Library/Extensions/10.9/prl_hypervisor.kext && break
+          RETRY_COUNT=$((RETRY_COUNT+1))
+          echo "Retry #$RETRY_COUNT failed. Waiting before retrying..."
+          sleep 2
+        done
+        
+        if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+          echo "Command failed after $MAX_RETRIES attempts."
+          exit 1
+        fi
