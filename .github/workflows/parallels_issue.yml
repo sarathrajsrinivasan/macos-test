@@ -20,8 +20,9 @@ jobs:
         brew install --cask parallels-virtualization-sdk
     - name: Retry command
       run: |
-        MAX_RETRIES=2
+        MAX_RETRIES=3
         RETRY_COUNT=0
+        sleep 60
         until [ $RETRY_COUNT -ge $MAX_RETRIES ]
         do
           sudo kextload /Applications/Parallels\ Desktop.app/Contents/Library/Extensions/10.9/prl_hypervisor.kext && break
