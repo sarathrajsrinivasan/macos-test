@@ -2,7 +2,8 @@ name: GitHub Actions Demo
 
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 
-on: [push, workflow_dispatch] # we can add multiple event triggers like this. workflow_dispatch --> means manual trigger.
+on:
+  workflow_dispatch: # we can add multiple event triggers like this. workflow_dispatch --> means manual trigger.
 
 # We can also skip triggering the actions by mentioning [skip actions] / [skip ci] in the commit message
 #
