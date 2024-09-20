@@ -1,0 +1,20 @@
+name: Testing Generic
+
+on:
+  workflow_dispatch:
+    
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['macos-12', 'macos-13', 'macos-13-xlarge', 'macos-14', 'macos-14-large']
+        
+    runs-on: ${{ matrix.os }}
+
+    steps: 
+    - name: Run
+      shell: bash
+      run: |
+        cd /Applications/
+        ls -ltr
